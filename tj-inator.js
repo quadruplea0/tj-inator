@@ -1,15 +1,16 @@
-const { TOKEN } = require("./config.json") // Load environment variables from .env
+const { TOKEN } = require("./config.json") 
 const { Client, GatewayIntentBits, Events } = require("discord.js");
-let channel = "idkyourchannelhere"
+let channel = "yourchannelhere"
 
 
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-	    //let the bot send and read messages
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildPresences
+ 
     ],
 });
 
@@ -17,17 +18,24 @@ client.once(Events.ClientReady, readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
-client.on('messageCreate', async (message) => {
+client.on('presenceUpdate', (oldPresence, newPresence) => {
     // yeah
     const possiblemsgs = ["hewwo ama :33", "haii! ;3", "hewwo amaaa hru :333"];
 let r = Math.floor(Math.random() * possiblemsgs.length);
 let i = possiblemsgs[r];
 
+    if (newPresence.userId !== 'youruserid') return;
+ 
+  if (oldPresence.status === newPresence.status) return;
+ 
+  if (newPresence.status !== 'online') return;
+
     
-    if(message.author.id == "idk amas userid"){
-    message.channel.send(i);
-    
-  }
+    try {
+    client.channels.cache.get(channel).send(i);
+  } catch (error) {
+    console.log(error);
+  }    
 });
 
 
